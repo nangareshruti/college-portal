@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Management</title>
+</head>
+<body>
+
+    <h1>Student List</h1>
+
+    <a href="{% url 'student_create' %}">Add Student</a>
+
+    <br><br>
+
+    <!-- Search + Course Filter -->
+    <form method="GET">
+        <input
+            type="text"
+            name="search"
+            placeholder="Search by name or email"
+            value="{{ search_query }}"
+        >
+
+        <button type="submit">Search</button>
+
+        <br><br>
+
+        <label>Filter by Course:</label>
+
+        <select name="course">
+            <option value="">All Courses</option>
+
+            {% for c in courses %}
+                <option value="{{ c }}" {% if selected_course == c %}selected{% endif %}>
+                    {{ c }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Filter</button>
+
+        <a href="{% url 'student_list' %}">Clear All</a>
+    </form>
+
+    <br>
+
+    <!-- Student Table -->
+    <table border="1" cellpadding="10">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Age</th>
+            <th>Course</th>
+            <th>Actions</th>
+        </tr>
+
+        {% for student in students %}
+        <tr>
+            <td>{{ student.id }}</td>
+            <td>{{ student.name }}</td>
+            <td>{{ student.email }}</td>
+            <td>{{ student.age }}</td>
+            <td>{{ student.course }}</td>
+            <td>
+                <a href="{% url 'student_update' student.id %}">Edit</a>
+                |
+                <a href="{% url 'student_delete' student.id %}">Delete</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6">No students found.</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <br>
+
+    <!-- Pagination -->
+    <div>
+        <p>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</p>
+
+        {% if page_obj.has_previous %}
+            <a href="?page=1&search={{ search_query|urlencode }}&course={{ course|urlencode }}">First</a>
+            <a href="?page={{ page_obj.previous_page_number }}&search={{ search_query|urlencode }}&course={{ course|urlencode }}">Previous</a>
+        {% endif %}
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}&search={{ search_query|urlencode }}&course={{ course|urlencode }}">Next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}&search={{ search_query|urlencode }}&course={{ course|urlencode }}">Last</a>
+        {% endif %}
+    </div>
+
+</body>
+</html>

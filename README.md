@@ -1,32 +1,94 @@
-\# College Portal (Django)
+\# College Portal – Student Management System
 
 
 
-Day 3 of the PeakProSys Python Full Stack internship tasks.
+A Django-based Student Management System developed as part of my Python Full Stack Developer Internship at PeakProSys.
 
 
 
-Django models for trainers, courses, students, student profiles and enrollments
-
-(one-to-one, one-to-many and many-to-many relationships), with a customised admin panel.
+\## Features
 
 
 
-\## Run
+\- Create, Read, Update and Delete (CRUD) student records
 
-pip install -r requirements.txt
+\- Student registration form with validation
 
-python manage.py migrate
+\- Search students by name and email
 
-python manage.py createsuperuser
+\- Filter students by course
 
-python manage.py runserver
+\- Pagination for student records
 
-Open http://127.0.0.1:8000/admin
+\- Django Admin dashboard
+
+\- Trainer and Course management
+
+\- Student Profile using One-to-One relationship
+
+\- Enrollment management using Foreign Key relationships
+
+\- Admin inline functionality for Student Profile and Enrollment
+
+\- Duplicate enrollment prevention
 
 
 
-\## Screenshot
+\## Technologies Used
 
-!\[Admin students](screenshots/admin\_students.png)
+
+
+\- Python
+
+\- Django
+
+\- SQLite
+
+\- HTML
+
+\- CSS
+
+\- Django Admin
+
+
+
+\## Project Structure
+
+
+
+college\_portal/
+
+│
+
+├── config/
+
+├── students/
+
+├── templates/
+
+├── screenshots/
+
+├── manage.py
+
+├── requirements.txt
+
+├── .gitignore
+
+└── README.md
+
+
+
+\## Installation and Setup
+
+
+
+\### 1. Clone the repository
+
+
+
+```bash
+
+git clone YOUR\_GITHUB\_REPOSITORY\_URL
+
+cd college\_portal
 
