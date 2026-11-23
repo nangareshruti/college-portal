@@ -26,3 +26,26 @@ class StudentForm(forms.ModelForm):
                 'placeholder': 'Enter age'
             }),
         }
+
+    def clean_name(self):
+        name = self.cleaned_data.get('name', '').strip()
+
+        if not name:
+            raise forms.ValidationError("Name is required.")
+
+        if not all(char.isalpha() or char.isspace() for char in name):
+            raise forms.ValidationError(
+                "Name must contain only letters and spaces."
+            )
+
+        return name
+
+    def clean_age(self):
+        age = self.cleaned_data.get('age')
+
+        if age < 15 or age > 100:
+            raise forms.ValidationError(
+                "Age must be between 15 and 100."
+            )
+
+        return age
