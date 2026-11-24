@@ -90,6 +90,9 @@
             <a href="?page={{ page_obj.paginator.num_pages }}&search={{ search_query|urlencode }}&course={{ course|urlencode }}">Last</a>
         {% endif %}
     </div>
-
+     <form method="POST" action="{% url 'logout' %}">
+    {% csrf_token %}
+    <button type="submit">Logout</button>
+</form>
 </body>
 </html>

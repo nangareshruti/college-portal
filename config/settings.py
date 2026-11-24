@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
  'students',
+ 'accounts',
 ]
 
 MIDDLEWARE = [
@@ -122,7 +123,12 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
 
 MAILERS = {
-    'default': {
-        'BACKEND': 'django.core.mail.backends.console.EmailBackend',
-    },
+    "default": {
+        "BACKEND": "django.core.mail.backends.console.EmailBackend",
+    }
+
 }
+PASSWORD_RESET_TIMEOUT = 259200
+LOGIN_REDIRECT_URL = 'student_list'
+LOGOUT_REDIRECT_URL = 'login'
+LOGIN_URL = 'login'

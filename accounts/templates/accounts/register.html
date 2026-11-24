@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Registration</title>
+</head>
+<body>
+
+    <h1>College Portal</h1>
+    <h2>Create Account</h2>
+
+    <form method="POST">
+    {% csrf_token %}
+
+    {{ form.non_field_errors }}
+    {{ form.as_p }}
+
+    <button type="submit">Register</button>
+</form>
+
+    <p>
+       <p>Already have an account? Login feature coming soon.</p>
+    </p>
+
+</body>
+</html>

@@ -1,36 +1,47 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.paginator import Paginator
 from django.db.models import Q
+from django.contrib.auth.decorators import login_required, permission_required
+
 from .models import Student
 from .forms import StudentForm
 
 
+# =========================
+# STUDENT LIST
+# =========================
+
+@login_required
+@permission_required('students.view_student', raise_exception=True)
 def student_list(request):
+
     students = Student.objects.all().order_by('id')
 
-    # 1. Search by name or email
+    # Search by name or email
     search_query = request.GET.get('search', '').strip()
 
     if search_query:
         students = students.filter(
-            Q(name__icontains=search_query) | Q(email__icontains=search_query)
+            Q(name__icontains=search_query) |
+            Q(email__icontains=search_query)
         )
 
-    # 2. Filter by course (exact match, because it comes from a dropdown)
+    # Filter by course
     course = request.GET.get('course', '').strip()
 
     if course:
         students = students.filter(course=course)
 
-    # 3. List of all unique courses for the dropdown
+    # Get unique courses
     courses = (
         Student.objects.values_list('course', flat=True)
         .distinct()
         .order_by('course')
     )
 
-    # 4. Pagination: 10 students per page
+    # Pagination
     paginator = Paginator(students, 10)
+
     page_number = request.GET.get('page', 1)
     page_obj = paginator.get_page(page_number)
 
@@ -48,13 +59,21 @@ def student_list(request):
     )
 
 
+# =========================
+# CREATE STUDENT
+# =========================
+
+@login_required
+@permission_required('students.add_student', raise_exception=True)
 def student_create(request):
+
     if request.method == 'POST':
         form = StudentForm(request.POST)
 
         if form.is_valid():
             form.save()
             return redirect('student_list')
+
     else:
         form = StudentForm()
 
@@ -65,7 +84,14 @@ def student_create(request):
     )
 
 
+# =========================
+# UPDATE STUDENT
+# =========================
+
+@login_required
+@permission_required('students.change_student', raise_exception=True)
 def student_update(request, student_id):
+
     student = get_object_or_404(Student, id=student_id)
 
     if request.method == 'POST':
@@ -74,6 +100,7 @@ def student_update(request, student_id):
         if form.is_valid():
             form.save()
             return redirect('student_list')
+
     else:
         form = StudentForm(instance=student)
 
@@ -87,7 +114,14 @@ def student_update(request, student_id):
     )
 
 
+# =========================
+# DELETE STUDENT
+# =========================
+
+@login_required
+@permission_required('students.delete_student', raise_exception=True)
 def student_delete(request, student_id):
+
     student = get_object_or_404(Student, id=student_id)
 
     if request.method == 'POST':
