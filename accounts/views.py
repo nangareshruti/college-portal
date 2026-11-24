@@ -6,6 +6,7 @@ from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.core.mail import send_mail
 from django.urls import reverse
+from django.contrib.auth.decorators import login_required
 
 from .forms import RegistrationForm
 
@@ -112,4 +113,17 @@ def verify_email(request, uidb64, token):
     return render(
         request,
         'accounts/verification_failed.html'
+    )
+
+
+# =========================
+# USER PROFILE
+# =========================
+
+@login_required
+def profile(request):
+    return render(
+        request,
+        'accounts/profile.html',
+        {'user': request.user}
     )

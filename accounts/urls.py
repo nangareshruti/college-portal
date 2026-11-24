@@ -20,6 +20,14 @@ urlpatterns = [
         name='logout'
     ),
 
+    # User Profile
+    path(
+        'profile/',
+        views.profile,
+        name='profile'
+    ),
+
+    # Password Reset
     path(
         'password-reset/',
         auth_views.PasswordResetView.as_view(
@@ -53,9 +61,11 @@ urlpatterns = [
         ),
         name='password_reset_complete'
     ),
+
+    # Email Verification
     path(
-    'verify-email/<uidb64>/<token>/',
-    views.verify_email,
-    name='verify_email'
-),
+        'verify-email/<uidb64>/<token>/',
+        views.verify_email,
+        name='verify_email'
+    ),
 ]

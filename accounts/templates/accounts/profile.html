@@ -1,0 +1,62 @@
+
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h2>My Profile</h2>
+
+    <div class="card mt-3">
+        <div class="card-body">
+
+            <h4>User Information</h4>
+
+            <p>
+                <strong>Username:</strong>
+                {{ user.username }}
+            </p>
+
+            <p>
+                <strong>Email:</strong>
+                {{ user.email }}
+            </p>
+
+            <p>
+                <strong>First Name:</strong>
+                {{ user.first_name|default:"Not provided" }}
+            </p>
+
+            <p>
+                <strong>Last Name:</strong>
+                {{ user.last_name|default:"Not provided" }}
+            </p>
+
+            <p>
+                <strong>Date Joined:</strong>
+                {{ user.date_joined|date:"F d, Y" }}
+            </p>
+
+            <p>
+                <strong>Role:</strong>
+
+                {% if user.groups.all %}
+                    {% for group in user.groups.all %}
+                        {{ group.name }}
+                    {% empty %}
+                        No role assigned
+                    {% endfor %}
+                {% else %}
+                    No role assigned
+                {% endif %}
+            </p>
+
+        </div>
+    </div>
+
+    <a href="{% url 'student_list' %}" class="btn btn-primary mt-3">
+        Back to Students
+    </a>
+
+</div>
+
+{% endblock %}
