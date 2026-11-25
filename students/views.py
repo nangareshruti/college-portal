@@ -3,8 +3,15 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required, permission_required
 
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.generics import (
+    ListCreateAPIView,
+    RetrieveUpdateDestroyAPIView
+)
+
 from .models import Student
 from .forms import StudentForm
+from .serializers import StudentSerializer
 
 
 # =========================
@@ -15,7 +22,10 @@ from .forms import StudentForm
 @permission_required('students.view_student', raise_exception=True)
 def student_list(request):
 
-    students = Student.objects.all().order_by('id')
+    # Show only active students
+    students = Student.objects.filter(
+        is_deleted=False
+    ).order_by('id')
 
     # Search by name or email
     search_query = request.GET.get('search', '').strip()
@@ -34,7 +44,8 @@ def student_list(request):
 
     # Get unique courses
     courses = (
-        Student.objects.values_list('course', flat=True)
+        Student.objects.filter(is_deleted=False)
+        .values_list('course', flat=True)
         .distinct()
         .order_by('course')
     )
@@ -68,7 +79,7 @@ def student_list(request):
 def student_create(request):
 
     if request.method == 'POST':
-        form = StudentForm(request.POST)
+        form = StudentForm(request.POST, request.FILES)
 
         if form.is_valid():
             form.save()
@@ -92,10 +103,18 @@ def student_create(request):
 @permission_required('students.change_student', raise_exception=True)
 def student_update(request, student_id):
 
-    student = get_object_or_404(Student, id=student_id)
+    student = get_object_or_404(
+        Student,
+        id=student_id,
+        is_deleted=False
+    )
 
     if request.method == 'POST':
-        form = StudentForm(request.POST, instance=student)
+        form = StudentForm(
+            request.POST,
+            request.FILES,
+            instance=student
+        )
 
         if form.is_valid():
             form.save()
@@ -115,17 +134,25 @@ def student_update(request, student_id):
 
 
 # =========================
-# DELETE STUDENT
+# SOFT DELETE STUDENT
 # =========================
 
 @login_required
 @permission_required('students.delete_student', raise_exception=True)
 def student_delete(request, student_id):
 
-    student = get_object_or_404(Student, id=student_id)
+    student = get_object_or_404(
+        Student,
+        id=student_id,
+        is_deleted=False
+    )
 
     if request.method == 'POST':
-        student.delete()
+
+        # Soft delete instead of permanent deletion
+        student.is_deleted = True
+        student.save()
+
         return redirect('student_list')
 
     return render(
@@ -133,3 +160,36 @@ def student_delete(request, student_id):
         'students/student_confirm_delete.html',
         {'student': student}
     )
+
+
+# =========================
+# REST API - STUDENT LIST & CREATE
+# =========================
+
+class StudentAPIView(ListCreateAPIView):
+
+    queryset = Student.objects.filter(
+        is_deleted=False
+    ).order_by('id')
+
+    serializer_class = StudentSerializer
+    permission_classes = [IsAuthenticated]
+
+
+# =========================
+# REST API - SINGLE STUDENT
+# =========================
+
+class StudentDetailAPIView(RetrieveUpdateDestroyAPIView):
+
+    queryset = Student.objects.filter(
+        is_deleted=False
+    )
+
+    serializer_class = StudentSerializer
+    permission_classes = [IsAuthenticated]
+
+    # Soft delete through API
+    def perform_destroy(self, instance):
+        instance.is_deleted = True
+        instance.save()

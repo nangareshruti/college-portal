@@ -29,6 +29,16 @@ class Student(models.Model):
     phone = models.CharField(max_length=15)
     course = models.CharField(max_length=100)
     age = models.PositiveIntegerField()
+
+    profile_image = models.ImageField(
+        upload_to='student_images/',
+        blank=True,
+        null=True
+    )
+
+    # Soft Delete
+    is_deleted = models.BooleanField(default=False)
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

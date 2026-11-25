@@ -37,8 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
- 'students',
+ 'students.apps.StudentsConfig',
  'accounts',
+  'rest_framework',
+  'rest_framework_simplejwt',
 ]
 
 MIDDLEWARE = [
@@ -132,3 +134,11 @@ PASSWORD_RESET_TIMEOUT = 259200
 LOGIN_REDIRECT_URL = 'student_list'
 LOGOUT_REDIRECT_URL = 'login'
 LOGIN_URL = 'login'
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+}
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = BASE_DIR / 'media'

@@ -13,7 +13,7 @@ class StudentForm(forms.ModelForm):
 
     class Meta:
         model = Student
-        fields = ['name', 'email', 'age', 'course']
+        fields = ['name', 'email', 'age', 'course', 'profile_image']
 
         widgets = {
             'name': forms.TextInput(attrs={
