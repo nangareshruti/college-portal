@@ -25,7 +25,7 @@ urlpatterns = [
 
 
     # =========================
-    # REST API - LIST & CREATE
+    # REST API - STUDENTS
     # =========================
 
     path(
@@ -34,14 +34,42 @@ urlpatterns = [
         name='student_api'
     ),
 
-
-    # =========================
-    # REST API - SINGLE STUDENT
-    # =========================
-
     path(
         'api/students/<int:pk>/',
         views.StudentDetailAPIView.as_view(),
         name='student_detail_api'
     ),
+
+
+    # =========================
+    # REST API - COURSES
+    # =========================
+
+    path(
+        'api/courses/',
+        views.CourseAPIView.as_view(),
+        name='course_api'
+    ),
+
+    path(
+        'api/courses/<int:pk>/',
+        views.CourseDetailAPIView.as_view(),
+        name='course_detail_api'
+    ),
+
+
+    # =========================
+    # REST API - TRAINERS
+    # =========================
+
+    path(
+        'api/trainers/',
+        views.TrainerAPIView.as_view(),
+        name='trainer_api'
+    ),
+    path(
+    'api/trainers/<int:pk>/',
+    views.TrainerDetailAPIView.as_view(),
+    name='trainer_detail_api'
+),
 ]

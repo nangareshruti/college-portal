@@ -6,12 +6,12 @@ from django.contrib.auth.decorators import login_required, permission_required
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import (
     ListCreateAPIView,
-    RetrieveUpdateDestroyAPIView
+    RetrieveUpdateDestroyAPIView,
 )
 
-from .models import Student
+from .models import Student, Course, Trainer
 from .forms import StudentForm
-from .serializers import StudentSerializer
+from .serializers import StudentSerializer, CourseSerializer, TrainerSerializer
 
 
 # =========================
@@ -22,12 +22,10 @@ from .serializers import StudentSerializer
 @permission_required('students.view_student', raise_exception=True)
 def student_list(request):
 
-    # Show only active students
     students = Student.objects.filter(
         is_deleted=False
     ).order_by('id')
 
-    # Search by name or email
     search_query = request.GET.get('search', '').strip()
 
     if search_query:
@@ -36,13 +34,11 @@ def student_list(request):
             Q(email__icontains=search_query)
         )
 
-    # Filter by course
     course = request.GET.get('course', '').strip()
 
     if course:
         students = students.filter(course=course)
 
-    # Get unique courses
     courses = (
         Student.objects.filter(is_deleted=False)
         .values_list('course', flat=True)
@@ -50,7 +46,6 @@ def student_list(request):
         .order_by('course')
     )
 
-    # Pagination
     paginator = Paginator(students, 10)
 
     page_number = request.GET.get('page', 1)
@@ -149,7 +144,6 @@ def student_delete(request, student_id):
 
     if request.method == 'POST':
 
-        # Soft delete instead of permanent deletion
         student.is_deleted = True
         student.save()
 
@@ -189,7 +183,52 @@ class StudentDetailAPIView(RetrieveUpdateDestroyAPIView):
     serializer_class = StudentSerializer
     permission_classes = [IsAuthenticated]
 
-    # Soft delete through API
     def perform_destroy(self, instance):
         instance.is_deleted = True
         instance.save()
+
+
+# =========================
+# REST API - COURSE LIST & CREATE
+# =========================
+
+class CourseAPIView(ListCreateAPIView):
+
+    queryset = Course.objects.select_related('trainer').all().order_by('id')
+
+    serializer_class = CourseSerializer
+    permission_classes = [IsAuthenticated]
+
+
+# =========================
+# REST API - SINGLE COURSE
+# =========================
+
+class CourseDetailAPIView(RetrieveUpdateDestroyAPIView):
+
+    queryset = Course.objects.select_related('trainer').all()
+
+    serializer_class = CourseSerializer
+    permission_classes = [IsAuthenticated]
+
+
+# =========================
+# REST API - TRAINER LIST
+# =========================
+
+class TrainerAPIView(ListCreateAPIView):
+
+    queryset = Trainer.objects.all().order_by('id')
+
+    serializer_class = TrainerSerializer
+    permission_classes = [IsAuthenticated]
+    # =========================
+# REST API - SINGLE TRAINER
+# =========================
+
+class TrainerDetailAPIView(RetrieveUpdateDestroyAPIView):
+
+    queryset = Trainer.objects.all()
+
+    serializer_class = TrainerSerializer
+    permission_classes = [IsAuthenticated]
