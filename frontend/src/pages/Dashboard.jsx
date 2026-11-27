@@ -1,6 +1,7 @@
+
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import axios from "axios";
+import axiosInstance from "../api/axiosInstance";
 
 function Dashboard() {
   const [students, setStudents] = useState(0);
@@ -8,29 +9,35 @@ function Dashboard() {
   const [trainers, setTrainers] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  const STUDENT_API = "http://127.0.0.1:8000/students/api/students/";
-  const COURSE_API = "http://127.0.0.1:8000/students/api/courses/";
-  const TRAINER_API = "http://127.0.0.1:8000/students/api/trainers/";
+  const getCount = (data) => {
+    if (Array.isArray(data)) {
+      return data.length;
+    }
+
+    if (data && Array.isArray(data.results)) {
+      return data.results.length;
+    }
+
+    if (data && typeof data.count === "number") {
+      return data.count;
+    }
+
+    return 0;
+  };
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const token = localStorage.getItem("accessToken");
-
-        const headers = {
-          Authorization: `Bearer ${token}`,
-        };
-
         const [studentResponse, courseResponse, trainerResponse] =
           await Promise.all([
-            axios.get(STUDENT_API, { headers }),
-            axios.get(COURSE_API, { headers }),
-            axios.get(TRAINER_API, { headers }),
+            axiosInstance.get("/students/api/students/"),
+            axiosInstance.get("/students/api/courses/"),
+            axiosInstance.get("/students/api/trainers/"),
           ]);
 
-        setStudents(studentResponse.data.length);
-        setCourses(courseResponse.data.length);
-        setTrainers(trainerResponse.data.length);
+        setStudents(getCount(studentResponse.data));
+        setCourses(getCount(courseResponse.data));
+        setTrainers(getCount(trainerResponse.data));
       } catch (error) {
         console.error("Dashboard data error:", error);
         alert("Unable to load dashboard data.");
@@ -78,14 +85,11 @@ function Dashboard() {
           </Link>
 
           {/* Admin Card */}
-          <div
-            className="dashboard-card"
-            onClick={() => alert("Admin settings coming soon!")}
-          >
+          <Link to="/admin" className="dashboard-card">
             <h2>Admin</h2>
             <p>Manage portal settings</p>
             <span>Click to explore →</span>
-          </div>
+          </Link>
 
         </div>
       )}
